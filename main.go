@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"iris-learn/Book"
+	controllers "iris-learn/Controllers"
 	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
 )
 
 func main() {
@@ -31,8 +32,12 @@ func main() {
 
 	// Book Url
 	bookUrl := baseUrl.Party("/book")
-	bookUrl.Get("/", Book.GetListBook)
-	bookUrl.Post("/", Book.CreateBook)
+	// bookUrl.Get("/", Book.GetListBook)
+	// bookUrl.Post("/", Book.CreateBook)
+
+	// Book Url Controller
+	m := mvc.New(bookUrl)
+	m.Handle(new(controllers.BookController))
 
 	fmt.Println("Server running on port " + APP_PORT)
 	app.Listen(APP_PORT)
