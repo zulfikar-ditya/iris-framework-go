@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"iris-learn/Book"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -27,6 +28,11 @@ func main() {
 			"message": "Welcome to api " + APP_NAME,
 		})
 	})
+
+	// Book Url
+	bookUrl := baseUrl.Party("/book")
+	bookUrl.Get("/", Book.GetListBook)
+	bookUrl.Post("/", Book.CreateBook)
 
 	fmt.Println("Server running on port " + APP_PORT)
 	app.Listen(APP_PORT)
