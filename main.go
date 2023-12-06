@@ -11,7 +11,8 @@ import (
 )
 
 func main() {
-	app := iris.New()
+	// app := iris.New()
+	app := iris.Default()
 
 	// load env
 	envError := godotenv.Load()
@@ -38,6 +39,51 @@ func main() {
 	// Book Url Controller
 	m := mvc.New(bookUrl)
 	m.Handle(new(controllers.BookController))
+
+	// route parameter
+	// can be any types
+	bookUrl.Get("/{id:int}", func(ctx iris.Context) {
+		id := ctx.Params().Get("id")
+		ctx.JSON(iris.Map{
+			"message": "Book id " + id,
+		})
+	})
+
+	// query string parameter
+	bookUrl.Get("/query", func(ctx iris.Context) {
+		firstName := ctx.URLParamDefault("firstName", "Guest")
+		lastName := ctx.URLParamDefault("lastName", "Guest")
+
+		ctx.JSON(iris.Map{
+			"message": "Success",
+			"data": iris.Map{
+				"firstName": firstName,
+				"lastName": lastName,
+			},
+		});
+	})
+
+	// Multipart/Urlencoded Form
+	bookUrl.Post("/multipart", func(ctx iris.Context) {
+		bookTitle := ctx.PostValue("title");
+		
+		if bookTitle == "" {
+			ctx.StatusCode(iris.StatusUnprocessableEntity)
+			ctx.JSON(iris.Map{
+				"message": "Title is required",
+				"errors": iris.Map{
+					"title": "Title is required",
+				},
+			})
+
+			return;
+		}
+
+		ctx.StatusCode(iris.StatusCreated)
+		ctx.JSON(iris.Map{
+			"message": "Book created",
+		})
+	})
 
 	fmt.Println("Server running on port " + APP_PORT)
 	app.Listen(APP_PORT)
